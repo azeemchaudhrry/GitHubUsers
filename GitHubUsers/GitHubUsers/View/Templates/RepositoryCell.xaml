@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ViewCell xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="GitHubUsers.View.Templates.RepositoryCell">
+    <ViewCell.View>
+        <Frame HasShadow="True" Margin="16,12,16,4" CornerRadius="8"
+               Padding="12" BackgroundColor="{StaticResource PageBackgroundColor}">
+            <Grid VerticalOptions="Start">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Image x:Name="UserImage"  
+                   Grid.Row="0"
+                   Grid.Column="0"
+                   HeightRequest="20"
+                   WidthRequest="20"
+                   Source="repository_icon"/>
+                <Label x:Name="RepositoryName" 
+                   Text="{Binding Name}" 
+                   Grid.Column="1"
+                   Grid.ColumnSpan="3" 
+                   Grid.Row="0" 
+                   FontFamily="FuturaPTBook"
+                   VerticalTextAlignment="Center"
+                   TextColor="{StaticResource TextColorDark}"
+                   FontSize="Medium"/>
+                <Label x:Name="RepositoryDescription" 
+                   Text="{Binding Description}" 
+                   Grid.Column="1" 
+                   Grid.ColumnSpan="3" 
+                   Grid.Row="1" 
+                   FontFamily="FuturaPTBook"
+                   FontSize="Small"/>
+                <Label x:Name="RepositoryStarCount" 
+                   Grid.Column="1"
+                   Grid.Row="2"
+                   FontFamily="FontAwesome"
+                   Margin="0,0,8,0">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="&#xf005;" FontFamily="FontAwesome" TextColor="{Binding Stars, Converter={StaticResource StarColorConverter}}"/>
+                            <Span Text="  "/>
+                            <Span Text="{Binding Stars}" FontFamily="FuturaPTBook"/>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+                <Label x:Name="RepositoryLanguage" 
+                       Grid.Column="2"
+                       Grid.Row="2"
+                       Margin="0,0,8,0">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="&#xf111;" FontFamily="FontAwesome" TextColor="{Binding Language, Converter={StaticResource LanguageColorConverter}}"/>
+                            <Span Text="  "/>
+                            <Span Text="{Binding Language}" FontFamily="FuturaPTBook"/>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+                <Label x:Name="RepositoryLastUpdatedDate" 
+                   Text="{Binding UpdatedAt, Converter={StaticResource UpdateDateConverter}}" 
+                   Grid.Column="3" 
+                   Grid.Row="2" 
+                   HorizontalTextAlignment="End"
+                   FontFamily="FuturaPTBook"
+                   FontSize="Small"/>
+            </Grid>
+        </Frame>
+    </ViewCell.View>
+</ViewCell>

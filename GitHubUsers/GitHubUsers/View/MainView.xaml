@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:forms="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
+             xmlns:templates="clr-namespace:GitHubUsers.View.Templates;assembly=GitHubUsers"
+             xmlns:transformations="clr-namespace:FFImageLoading.Transformations;assembly=FFImageLoading.Transformations"
+             xmlns:controls="clr-namespace:GitHubUsers.Controls;assembly=GitHubUsers"
+             xmlns:iOsSpecific="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
+             mc:Ignorable="d"
+             iOsSpecific:Page.UseSafeArea="true"
+             x:Class="GitHubUsers.View.MainView">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <StackLayout Grid.Row="0"
+                     Orientation="Vertical" 
+                     Padding="16,0,16,0">
+            <Label Text="GitHub Users" 
+                   FontSize="Title" HeightRequest="54"
+                   VerticalTextAlignment="Center"
+                   FontFamily="FuturaPTMedium" 
+                   TextColor="{StaticResource TextColorDark}"/>
+            <Frame x:Name="header" CornerRadius="8" HasShadow="False" Padding="0" IsClippedToBounds="True">
+                <SearchBar x:Name="SearchBar" 
+                           HorizontalOptions="FillAndExpand" 
+                           Placeholder="Search Users..." 
+                           FontFamily="FuturaPTBook"
+                           SearchCommand="{Binding PerformSearch}"
+                           SearchCommandParameter="{Binding Text, Source={x:Reference SearchBar}}"
+                           BackgroundColor="{StaticResource PageBackgroundColor}">
+                </SearchBar>
+            </Frame>
+        </StackLayout>
+        <StackLayout
+            x:Name="UserNotFoundLayout"
+            HorizontalOptions="Center" 
+            VerticalOptions="Center"
+            IsVisible="{Binding UserNotFound}"
+            Grid.Row="1">
+            <Label 
+                Text="&#xf12a;"
+                FontFamily="FontAwesome"
+                TextColor="{StaticResource TextColorLight}"
+                HorizontalOptions="Center" 
+                VerticalOptions="Center"
+                FontSize="Large"/>
+            <Label 
+                Text="{Binding ErrorMessage}" 
+                FontSize="Medium" 
+                TextColor="{StaticResource TextColorLight}" 
+                VerticalOptions="Center" 
+                HorizontalOptions="Center"
+                FontFamily="FuturaPTMedium"/>
+        </StackLayout>
+        <controls:AdvancedListView
+            x:Name="UserRepositoriesListView" 
+            VerticalOptions="StartAndExpand"
+            IsVisible="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"
+            HasUnevenRows="true" 
+            Grid.Row="1"
+            PreLoadCount="5" 
+            IsPullToRefreshEnabled="True"
+            RefreshCommand="{Binding RefreshCommand}"
+            IsRefreshing="{Binding IsRefreshing}"
+            Header="{Binding .}"
+            SelectionMode="Single" 
+            ItemSelectedCommand="{Binding ItemSelectedCommand}" 
+            ItemsSource="{Binding Repositories}" 
+            SeparatorVisibility="None">
+            <ListView.HeaderTemplate>
+                <DataTemplate>
+                    <StackLayout>
+                        <Grid Margin="16,16,16,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <forms:CachedImage x:Name="UserImage" 
+                                               Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"
+                                               Source="{Binding UserDetails.AvatarUrl}">
+                                <forms:CachedImage.Transformations>
+                                    <transformations:RoundedTransformation />
+                                </forms:CachedImage.Transformations>
+                            </forms:CachedImage>
+                            <Label x:Name="UserName" 
+                                   Grid.Column="1"
+                                   Grid.Row="0"
+                                   FontFamily="FuturaPTMedium"
+                                   FontSize="Large"
+                                   TextColor="{StaticResource TextColorDark}"
+                                   Text="{Binding UserDetails.Name}">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding OpenUrlCommand}"
+                                                          CommandParameter="{Binding UserDetails.HtmlUrl}"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+                            <Label x:Name="UserLocation" 
+                                   TextColor="{StaticResource TextColorLight}"
+                                   FontFamily="FuturaPTBook"
+                                   FontSize="Small"
+                                   Grid.Column="1" 
+                                   Grid.Row="1" 
+                                   Text="{Binding UserDetails.Location}"/>
+                        </Grid>
+                        <Label Text="{Binding TotalCountString}"
+                               FontFamily="FuturaPTBook"
+                               FontSize="Medium"
+                               Margin="16,0,0,0"
+                               TextColor="{StaticResource TextColorLight}"/>
+                    </StackLayout>
+                </DataTemplate>
+            </ListView.HeaderTemplate>
+            <controls:AdvancedListView.ItemTemplate>
+                <DataTemplate>
+                    <templates:RepositoryCell/>
+                </DataTemplate>
+            </controls:AdvancedListView.ItemTemplate>
+            <controls:AdvancedListView.FooterTemplate>
+                <DataTemplate>
+                    <ActivityIndicator Margin="12" IsRunning="True" HeightRequest="40"/>
+                </DataTemplate>
+            </controls:AdvancedListView.FooterTemplate>
+            <controls:AdvancedListView.Triggers>
+                <DataTrigger TargetType="ListView" Binding="{Binding IsLoadingIncrementally}" Value="False">
+                    <Setter Property="Footer" Value=""/>
+                </DataTrigger>
+                <DataTrigger TargetType="ListView" Binding="{Binding IsLoadingIncrementally}" Value="True">
+                    <Setter Property="Footer" Value="{Binding Path=FooterTemplate, Source={x:Reference UserRepositoriesListView}}"/>
+                </DataTrigger>
+            </controls:AdvancedListView.Triggers>
+        </controls:AdvancedListView>
+    </Grid>
+</ContentPage>
